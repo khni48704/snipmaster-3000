@@ -252,3 +252,20 @@ function loadSnippet(id) {
 
   // Initial check
   document.addEventListener('DOMContentLoaded', updateConnectionStatus);
+
+  // Add this to your app.js to allow manual cache updates if needed
+function updateCaches() {
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistration()
+    .then(registration => {
+    if (registration) {
+    // Force the service worker to update
+    registration.update();
+    }
+    });
+    }
+    }
+    // Add a refresh button to your app UI if you want
+    const refreshButton = document.getElementById('refresh-app');
+    if (refreshButton) {refreshButton.addEventListener('click', updateCaches);
+    }
