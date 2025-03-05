@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+   <html lang="en">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>SnipMaster 3000 - Offline</title>
+       <style>
+           body {
+               font-family: Arial, sans-serif;
+               display: flex;
+               flex-direction: column;
+               align-items: center;
+               justify-content: center;
+               min-height: 100vh;
+               margin: 0;
+               padding: 20px;
+               text-align: center;
+               background-color: #f7f9fb;
+           }
+           
+           .offline-container {
+               background-color: white;
+               border-radius: 8px;
+               box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+               padding: 30px;
+               max-width: 500px;
+               width: 100%;
+           }
+           
+           h1 {
+               color: #2c3e50;
+           }
+           
+           .offline-icon {
+               font-size: 64px;
+               margin-bottom: 20px;
+           }
+           
+           .message {
+               color: #7f8c8d;
+               margin-bottom: 25px;
+               line-height: 1.5;
+           }
+           
+           .refresh-button {
+               background-color: #3498db;
+               color: white;
+               border: none;
+               padding: 10px 20px;
+               border-radius: 4px;
+               cursor: pointer;
+               font-size: 16px;
+           }
+           
+           .refresh-button:hover {
+               background-color: #2980b9;
+           }
+       </style>
+   </head>
+   <body>
+       <div class="offline-container">
+           <div class="offline-icon">📴</div>
+           <h1>You're Offline</h1>
+           <p class="message">
+               It looks like you don't have an internet connection right now.
+               Your snippets are still available if you've previously loaded them.
+           </p>
+           <button class="refresh-button" onclick="window.location.reload()">
+               Try Again
+           </button>
+       </div>
+   </body>
+   </html>

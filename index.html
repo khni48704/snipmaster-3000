@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnipMaster 3000</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="icon" type="image/png" href="/img/SnipMaster3000.jpg">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>SnipMaster 3000</h1>
+                <button id="newSnippetBtn">+ New Snippet</button>
+            </div>
+            <div class="snippet-list" id="snippetList">
+                <!-- Snippets will be listed here -->
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="toolbar">
+                <select id="languageSelect">
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                </select>
+                <button id="saveBtn">Save</button>
+            </div>
+            <div class="editor-container">
+                <textarea id="codeEditor" placeholder="Type your code here..."></textarea>
+            </div>
+            <!-- Add inside editor-container, after textarea -->
+<div id="codePreview" class="code-preview"></div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="scripts/app.js"></script>
+    <div id="connection-status" style="position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px 10px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 14px;">
+        ⚪ Checking...
+      </div>
+</body>
+</html>
