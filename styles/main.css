@@ -246,3 +246,22 @@ body {
   .sw-status.error {
     background-color: #e74c3c;
   }
+
+  .install-button {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: none;
+   }
+   .install-button:hover {
+    background-color: #2980b9;
+}
