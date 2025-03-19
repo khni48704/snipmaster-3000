@@ -39,21 +39,27 @@
 					<option value="html">HTML</option>
 					<option value="css">CSS</option>
 				</select>
-				<button id="saveBtn">Save</button> 
-				<button id="install-button" class="install-button">Install SnipMaster 3000</button>
- 
+				<button id="saveBtn">Save</button>  
+				<button id="install-button" style="display: none;" class="install-button">Install SnipMaster 3000</button>
 			</div>
+
 			<div class="editor-container">
 				<textarea placeholder="Type your code here..." id="codeEditor"></textarea>
 				<div id="codePreview" class="code-preview"></div>
 			</div>
-
 		</main>
 	</div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 
-	<script src="scripts/app.js"></script>
+	<script type="module" src="scripts/app.js"></script>
+	<script type="module" src="scripts/js/connectionStatus.js"></script>
+	<script type="module" src="scripts/js/fileHandler.js"></script>
+	<script type="module" src="scripts/js/preview.js"></script>
+	<script type="module" src="scripts/js/protocolHandler.js"></script>
+	<script type="module" src="scripts/js/pwaInstall.js"></script>
+	<script type="module" src="scripts/js/serviceWorker.js"></script>
+	<script type="module" src="scripts/js/snippetManager.js"></script>
 
 	<div id="connection-status"style="position: fixed; bottom: 10px;right: 10px; background: white; padding: 5px 10px;
 		border-radius: 4px;box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 14px;">⚪ Checking...</div>
