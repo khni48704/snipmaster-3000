@@ -259,7 +259,7 @@ body {
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     z-index: 1000;
-    display: none;
+    /*display: none;*/
    }
    .install-button:hover {
     background-color: #2980b9;
