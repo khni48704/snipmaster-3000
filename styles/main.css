@@ -264,3 +264,13 @@ body {
    .install-button:hover {
     background-color: #2980b9;
 }
+
+.snippet-item.highlighted {
+    border-left: 4px solid #e74c3c;
+    animation: pulse 1.5s infinite;
+   }
+   @keyframes pulse {
+    0% { background-color: rgba(231, 76, 60, 0.1); }
+    50% { background-color: rgba(231, 76, 60, 0.2); }
+    100% { background-color: rgba(231, 76, 60, 0.1); }
+   }

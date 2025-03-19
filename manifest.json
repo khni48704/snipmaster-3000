@@ -1,27 +1,65 @@
 {
-    "name": "SnipMaster 3000 - Code Snippet Manager",
+    "name": "SnipMaster 3000",
     "short_name": "SnipMaster",
-    "description": "Save and organize your code snippets",
+    "description": "Your Code Snippet Manager",
     "start_url": "/index.html",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#3498db",
+    "background_color": "#2c3e50",
+    "theme_color": "#2c3e50",
     "icons": [
-      {
-        "src": "img/icon-192.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      },
-      {
-        "src": "img/icon-512.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      },
-      {
-        "src": "img/maskable-icon.png",
-        "sizes": "512x512",
-        "type": "image/png",
-        "purpose": "maskable"
-      }
+        {
+            "src": "/img/SnipMaster3000.jpg",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/img/SnipMaster3000.jpg",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "img/maskable-icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "New Snippet",
+            "short_name": "New",
+            "description": "Create a new code snippet",
+            "url": "/index.html?new=true",
+            "icons": [{ "src": "images/add-icon.png", "sizes": "96x96", "type": "image/png" }]
+        },
+        {
+            "name": "Recent Snippets",
+            "short_name": "Recent",
+            "description": "View your recent snippets",
+            "url": "/index.html?filter=recent",
+            "icons": [{ "src": "images/recent-icon.png", "sizes": "96x96", "type": "image/png" }]
+        }
+    ],
+    "file_handlers": [
+        {
+            "action": "/",
+            "accept": {
+                "text/*": [".txt", ".js", ".html", ".css", ".json", ".md"]
+            }
+        }
+    ],
+    "protocol_handlers": [
+        {
+            "protocol": "web+snippet",
+            "url": "/index.html?snippet=%s"
+        }
+    ],
+    "categories": ["productivity", "development", "utilities"],
+    "screenshots": [
+        {
+            "src": "img/screenshot1.png",
+            "sizes": "1280x720",
+            "type": "image/png"
+        }
     ]
-  }
+}

@@ -307,3 +307,142 @@ window.addEventListener('appinstalled', () => {
         installButton.style.display = 'none';
     }
 });
+// Handle files opened with the app
+if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
+    window.launchQueue.setConsumer(async (launchParams) => {
+        if (!launchParams.files.length) {
+            return;
+        }
+
+        // Handle each file
+        for (const fileHandle of launchParams.files) {
+            try {
+                const file = await fileHandle.getFile();
+                const content = await file.text();
+                // Create a new snippet from the file
+                createSnippetFromFile({
+                    name: file.name,
+                    language: detectLanguage(file.name),
+                    code: content
+                });
+            } catch (error) {
+                console.error('Error handling file:', error);
+                showError('Failed to open file. ' + error.message);
+            }
+        }
+    });
+}
+// Detect language based on file extension
+function detectLanguage(filename) {
+    const extension = filename.split('.').pop().toLowerCase();
+
+    const extensionMap = {
+        'js': 'javascript',
+        'html': 'html',
+        'css': 'css',
+        'py': 'python',
+        'java': 'java',
+        'php': 'php',
+        'rb': 'ruby',
+        'md': 'markdown',
+        'json': 'json',
+        'xml': 'xml',
+        'sql': 'sql',
+        'sh': 'bash',
+        'c': 'c',
+        'cpp': 'cpp',
+        'cs': 'csharp',
+        'ts': 'typescript'
+    };
+    return extensionMap[extension] || 'plaintext';
+}
+// Create snippet from file content
+function createSnippetFromFile({ name, language, code }) {
+    // Set editor values
+    const codeEditor = document.getElementById('codeEditor');
+    const languageSelect = document.getElementById('languageSelect');
+
+    if (codeEditor && languageSelect) {
+        // Set values
+        codeEditor.value = code;
+
+        // Try to set the language if supported
+        if (Array.from(languageSelect.options).some(opt => opt.value ===
+            language)) {
+            languageSelect.value = language;
+        }
+
+        // Update UI
+        if (typeof updatePreview === 'function') {
+            updatePreview();
+        }
+
+        // Show success message
+        showMessage(`Opened file: ${name}`);
+    }
+}
+// Handle protocol invocation
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if we were launched via protocol
+    const urlParams = new URLSearchParams(window.location.search);
+    const snippetId = urlParams.get('snippet');
+
+    if (snippetId) {
+        // Try to load the snippet by ID
+        loadSnippetById(snippetId);
+    }
+
+    // Handle the "new" parameter
+    if (urlParams.has('new') && urlParams.get('new') === 'true') {
+        // Create a new snippet
+        document.getElementById('newSnippetBtn')?.click();
+    }
+
+    // Handle the "filter" parameter
+    if (urlParams.has('filter')) {
+        const filter = urlParams.get('filter');
+        if (filter === 'recent') {
+            displayRecentSnippets();
+        }
+    }
+});
+// Function to load snippet by ID
+function loadSnippetById(id) {
+    // Get snippets from localStorage
+    const snippets = JSON.parse(localStorage.getItem('snippets') ||
+        '[]');
+
+    // Find the snippet
+    const snippet = snippets.find(s => s.id === id);
+
+    if (snippet) {
+        // Load it into the editor
+        loadSnippet(id);
+    } else {
+        showError(`Snippet not found: ${id}`);
+    }
+}
+// Display recent snippets
+function displayRecentSnippets() {
+    const snippets = JSON.parse(localStorage.getItem('snippets') ||
+        '[]');
+
+    // Sort by last modified date, newest first
+    const recentSnippets = [...snippets].sort((a, b) => {
+        return new Date(b.lastModified) - new Date(a.lastModified);
+    }).slice(0, 5); // Get top 5
+
+    // Highlight these in the UI
+    // This depends on your specific UI implementation
+    highlightSnippets(recentSnippets.map(s => s.id));
+}
+// Highlight snippets in the list
+function highlightSnippets(ids) {
+    document.querySelectorAll('.snippet-item').forEach(item => {
+        if (ids.includes(item.dataset.id)) {
+            item.classList.add('highlighted');
+        } else {
+            item.classList.remove('highlighted');
+        }
+    });
+}
