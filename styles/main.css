@@ -315,3 +315,201 @@ body {
     90% { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-20px); }
 }
+
+#app-status-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+.app-status {
+ display: flex;
+ align-items: center;
+ padding: 10px 15px;
+ border-radius: 4px;
+ margin-bottom: 10px;
+ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+ animation: slideIn 0.3s ease-out;
+ font-size: 14px;
+}
+.app-status .status-icon {
+ margin-right: 8px;
+ font-size: 16px;
+}
+/* Status-specific styles */
+.app-status.online {
+ background-color: #d4edda;
+ color: #155724;
+}
+.app-status.offline {
+ background-color: #f8d7da;
+ color: #721c24;
+}
+.app-status.syncing {
+ background-color: #cce5ff;
+ color: #004085;
+}
+.app-status.sync-error {
+ background-color: #fff3cd;
+ color: #856404;
+}
+.app-status.sync-success {
+ background-color: #d4edda;
+ color: #155724;
+}
+/* Animation */
+@keyframes slideIn {
+ from { transform: translateX(100px); opacity: 0; }
+ to { transform: translateX(0); opacity: 1; }
+}
+/* Item-level indicators */
+.snippet-sync-status {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ width: 20px
+;
+ height: 20px
+;
+ border-radius: 50%
+;
+ font-size: 12px
+;
+ margin-left: 8px
+;
+}
+.snippet-sync-status.pending {
+ background-color: #ffeb3b
+;
+ color: #333
+;
+ animation: pulse 1.5s infinite; }
+.snippet-sync-status.error {
+ background-color: #f44336
+;
+ color: white; }
+.snippet-sync-status.synced {
+ background-color: #4CAF50
+;
+ color: white; }
+@keyframes pulse {
+ 0% { opacity: 0.4; }
+ 50% { opacity:
+1; }
+ 100% { opacity: 0.4; } }
+/* Sync button */
+.sync-button {
+ background-color: #4CAF50
+;
+ color: white;
+ border: none;
+ border-radius: 4px
+;
+ padding: 8px 12px
+;
+ margin-left: 10px
+;
+ cursor: pointer;
+ font-size: 14px
+;
+ display: flex;
+ align-items: center; }
+.sync-button:hover {
+ background-color: #45a049
+;
+}
+.sync-button:disabled {
+ background-color: #cccccc
+;
+ cursor: not-allowed; }
+ /* Sync item button */
+.sync-item-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 3px 8px;
+    font-size: 0.8em;
+    cursor: pointer;
+    margin-left: 5px;
+   }
+   .sync-item-btn:hover {
+    background-color: #2980b9;
+   }
+   /* When offline */
+   .app-state-offline .online-only {
+    opacity: 0.5;
+    pointer-events: none;
+   }
+   .app-state-offline .show-when-offline {
+    display: block;
+   }
+   .show-when-offline {
+    display: none;
+   }
+   /* Offline banner */
+   .offline-banner {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #f5c6cb;
+    display: none;
+   }
+   .app-state-offline .offline-banner {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+   }
+   .offline-content {
+    display: flex;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 10px;
+   }
+   .offline-icon {
+    font-size: 24px;
+    margin-right: 15px;
+   }
+   .offline-message {
+    flex: 1;
+   }
+   .offline-message h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+   }
+   .offline-message p {
+    margin: 0;
+    font-size: 14px;
+   }
+   @keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+   }
+   /* Last sync time display */
+   .last-sync-time {
+    font-size: 12px;
+    color: #666;
+    margin-left: 15px;
+    align-self: center;
+   }
+   /* Sync message in snippet item */
+   .sync-message {
+    color: #856404;
+    background-color: #fff3cd;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-style: italic;
+    margin-top: 5px;
+    display: inline-block;
+   }
+   /* Create a clearer look when offline */
+   .app-state-offline .app-container {
+    border: 2px solid #f8d7da;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.1);
+   }
+   .app-state-syncing .app-container {
+    border: 2px solid #cce5ff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
+   }

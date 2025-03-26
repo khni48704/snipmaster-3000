@@ -40,21 +40,47 @@ const SnippetUI = {
         try {
             const snippets = await SnippetStorage.getAll();
             const snippetList = this.elements.snippetList;
-            snippetList.innerHTML = snippets.map(snippet => `
-                <div class="snippet-item ${snippet.id === this.currentSnippetId ? 'selected' : ''}" data-id="${snippet.id}">
-                    <div class="snippet-info">
-                        <strong>${snippet.language}</strong>
-                        <div class="snippet-dates">
-                            <small>Created: ${new Date(snippet.created).toLocaleDateString()}</small>
-                            <small>Modified: ${new Date(snippet.lastModified).toLocaleDateString()}</small>
+            snippetList.innerHTML = snippets.map(snippet => {
+                // Determine status icon and class
+                let statusIcon = '';
+                let statusClass = '';
+
+                if (snippet.syncStatus === 'pending') {
+                    statusIcon = '🔄 ';
+                    statusClass = 'pending';
+                } else if (snippet.syncStatus === 'error') {
+                    statusIcon = '⚠ ';
+                    statusClass = 'error';
+                } else {
+                    statusIcon = '✓';
+                    statusClass = 'synced';
+                }
+
+                return `
+                    <div class="snippet-item ${snippet.id === this.currentSnippetId ? 'selected' : ''}" data-id="${snippet.id}">
+                        <div class="snippet-info">
+                            <div class="snippet-header">
+                                <strong>${snippet.language}</strong>
+                                <span class="snippet-sync-status ${statusClass}" title="${statusClass === 'pending' ? 'Waiting to sync' : statusClass === 'error' ? 'Sync failed' : 'Synced'}">
+                                    ${statusIcon}
+                                </span>
+                            </div>
+                            <div class="snippet-dates">
+                                <small>Created: ${new Date(snippet.created).toLocaleDateString()}</small>
+                                <small>Modified: ${new Date(snippet.lastModified).toLocaleDateString()}</small>
+                                ${snippet.syncStatus === 'pending' ? '<small class="sync-message">Will sync when online</small>' : ''}
+                            </div>
+                        </div>
+                        <pre><code>${snippet.code.substring(0, 50)}${snippet.code.length > 50 ? '...' : ''}</code></pre>
+                        <div class="snippet-actions">
+                            <button class="delete-btn" data-id="${snippet.id}">Delete</button>
+                            ${snippet.syncStatus === 'pending' && navigator.onLine ? `<button class="sync-item-btn" data-id="${snippet.id}">Sync Now</button>` : ''}
                         </div>
                     </div>
-                    <pre><code>${snippet.code.substring(0, 50)}${snippet.code.length > 50 ? '...' : ''}</code></pre>
-                    <div class="snippet-actions">
-                        <button class="delete-btn" data-id="${snippet.id}">Delete</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+
+            // Add event listeners
             this.addSnippetEventListeners();
         } catch (error) {
             console.error('Error displaying snippets:', error);
@@ -63,24 +89,31 @@ const SnippetUI = {
     },
 
     addSnippetEventListeners: function () {
+        // Snippet item click
         this.elements.snippetList.querySelectorAll('.snippet-item').forEach(item => {
             item.addEventListener('click', (e) => {
-                if (!e.target.matches('.delete-btn')) {
+                if (!e.target.matches('.delete-btn') && !e.target.matches('.sync-item-btn')) {
                     const id = item.dataset.id;
                     this.handlers.snippetItemClick(id);
                 }
             });
         });
 
+        // Delete button click
         this.elements.snippetList.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const id = e.target.dataset.id;
-                if (id) {
-                    this.handlers.deleteButtonClick(id);
-                } else {
-                    console.error('Delete button clicked, but no ID found');
-                }
+                const id = btn.dataset.id;
+                this.handlers.deleteButtonClick(id);
+            });
+        });
+
+        // Sync item button click
+        this.elements.snippetList.querySelectorAll('.sync-item-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.dataset.id;
+                this.handlers.syncItemButtonClick(id);
             });
         });
     },
@@ -169,6 +202,25 @@ const SnippetUI = {
 
         onlineStatusChange: function () {
             SnippetUI.updateConnectionStatus();
+        },
+
+        syncItemButtonClick: async function (id) {
+            try {
+                SyncUI.updateAppState(SyncUI.APP_STATES.SYNCING, 'Syncing single snippet...');
+                const result = await SnippetStorage.syncSingleSnippet(id);
+
+                if (result.success) {
+                    SyncUI.updateAppState(SyncUI.APP_STATES.SYNC_SUCCESS, 'Snippet synced successfully');
+                } else {
+                    SyncUI.updateAppState(SyncUI.APP_STATES.SYNC_ERROR, 'Failed to sync snippet');
+                }
+
+                // Refresh the list
+                await SnippetUI.renderSnippets();
+            } catch (error) {
+                console.error('Error syncing snippet:', error);
+                SyncUI.updateAppState(SyncUI.APP_STATES.SYNC_ERROR, 'Error syncing snippet');
+            }
         }
     }
 };

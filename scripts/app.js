@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         await SnippetStorage.migrateFromLocalStorage();
 
         // Then initialize the UI
-        await SnippetUI.init();
+await SnippetUI.init();
+SyncUI.init();
 
         console.log('SnipMaster 3000 initialized successfully');
     } catch (error) {
