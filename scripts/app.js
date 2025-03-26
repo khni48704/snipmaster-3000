@@ -7,7 +7,23 @@ import { PWAInstallation } from './js/pwaInstall.js';
 import { FileHandler } from './js/fileHandler.js';
 import { ProtocolHandler } from './js/protocolHandler.js';
 
-// Initialize service worker for offline functionality
+// Initialize the application when the DOM is loaded
+document.addEventListener('DOMContentLoaded', async function () {
+    try {
+        // First migrate data from localStorage to IndexedDB
+        await SnippetStorage.migrateFromLocalStorage();
+
+        // Then initialize the UI
+        await SnippetUI.init();
+
+        console.log('SnipMaster 3000 initialized successfully');
+    } catch (error) {
+        console.error('Error initializing application:', error);
+    }
+});
+
+
+// Call the registration function
 registerServiceWorker();
 
 // Initialize app when DOM is loaded

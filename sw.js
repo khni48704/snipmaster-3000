@@ -1,5 +1,3 @@
-// sw.js - Service Worker for SnipMaster 3000
-
 // Cache names with version identifiers
 const STATIC_CACHE = 'snipmaster-static-v1';
 const DYNAMIC_CACHE = 'snipmaster-dynamic-v1';
@@ -11,6 +9,8 @@ const APP_SHELL = [
   '/index.html',
   '/styles/main.css',
   '/scripts/app.js',
+  '/scripts/js/storage.js',
+  '/scripts/js/ui.js', 
   '/offline.html',
 ];
 
