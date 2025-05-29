@@ -1,3 +1,7 @@
+//definere appens metadata — som navn, ikon, start-URL og tema — så
+//den kan opføre sig som en "rigtig" app på mobilen (PWA: Progressive Web App).
+// Den gør det muligt at "installere" webappen på hjemskærmen og styre, hvordan den åbnes.
+
 {
     "name": "SnipMaster 3000 - Code Snippet Manager",
     "short_name": "SnipMaster",

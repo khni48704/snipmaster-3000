@@ -1,9 +1,12 @@
-// Cache names with version identifiers
+// En service worker er et stykke JavaScript-kode, der kører i baggrunden i en webbrowser og 
+//muliggør funktioner som offline-adgang, push-notifikationer og caching af indhold
+
+// Bruges til at identificere og organisere forskellige typer cache
 const STATIC_CACHE = 'snipmaster-static-v1';
 const DYNAMIC_CACHE = 'snipmaster-dynamic-v1';
 const SNIPPETS_CACHE = 'snipmaster-snippets-v1';
 
-// Files to cache initially (app shell)
+// Disse filer bliver cached under installationen, så appen kan virke offline
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -14,7 +17,9 @@ const APP_SHELL = [
   '/offline.html',
 ];
 
-// Install event - cache app shell
+// Service worker installeres og cacher app shell-filer
+// Service worker livscyklus starter her, med install, ved at cahche app-shell filer (index.html, css..) 
+//-> mugighed for offline 
 self.addEventListener('install', event => {
   console.log('Service Worker: Installing...');
   event.waitUntil(
@@ -30,7 +35,9 @@ self.addEventListener('install', event => {
   );
 });
 
-// Activate event - clean up old caches
+// Når service worker aktiveres, ryddes gamle caches op
+// Active fasen i livscyklusen: ryder gamle cache og sikrer, 
+//at den nye service worker straks tager kontrol over åbne tabs
 self.addEventListener('activate', event => {
   console.log('Service Worker: Activating...');
   const currentCaches = [STATIC_CACHE, DYNAMIC_CACHE, SNIPPETS_CACHE];
@@ -57,17 +64,18 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch event - will be implemented in next steps
+// Her vil vi implementere vores cache-strategier senere
+// feacth fasen i livsyklussen: Fetch-fasen bruges til at intercept netværksanmodninger 
+//og vælge en cache-strategi, afhængig af typen af forespørgse
 self.addEventListener('fetch', event => {
-  // We'll implement our strategies here
+  // Strategier til håndtering af forespørgsler implementeres her
 });
 
-
-// Cache-first strategy for static assets
+// === CACHE-FIRST STRATEGI ===
+// Bruges til statiske filer: hent fra cache først, ellers fra netværket
 function cacheFirst(event) {
   return caches.match(event.request)
     .then(cachedResponse => {
-      // Return cached response if found
       if (cachedResponse) {
         return cachedResponse;
       }
@@ -75,9 +83,8 @@ function cacheFirst(event) {
       self.addEventListener('fetch', (event) => {
         const url = new URL(event.request.url);
 
-        // Handle different URLs with different strategies
 
-        // 1. For API requests (if your app has them)
+        // 1. For API requests
         if (url.pathname.startsWith('/api/')) {
           event.respondWith(networkFirst(event));
           return;
@@ -98,7 +105,7 @@ function cacheFirst(event) {
           return;
         }
 
-        // 4. For static assets (JS, CSS, images, etc.)
+        // 4. For static filer (JS, CSS, images...)
         if (
           url.pathname.endsWith('.js') ||
           url.pathname.endsWith('.css') ||
@@ -118,18 +125,17 @@ function cacheFirst(event) {
     });
 }
 
-// Add this to your sw.js file
 
-// Network-first strategy for dynamic content
+// === NETWORK-FIRST STRATEGI ===
+// Bruges til dynamisk indhold: forsøg netværk først, ellers fallback til cache
 function networkFirst(event) {
   return fetch(event.request)
     .then(networkResponse => {
-      // Check if we received a valid response
       if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
         return networkResponse;
       }
 
-      // Clone the response
+      // Gem kopien af respons i dynamic cache
       const responseToCache = networkResponse.clone();
 
       // Add to dynamic cache
@@ -140,31 +146,25 @@ function networkFirst(event) {
       return networkResponse;
     })
     .catch(() => {
-      // If network fails, try the cache
+      // Ved netværksfejl: forsøg at hente fra cache
       return caches.match(event.request).then(cachedResponse => {
-        // If found in cache, return it
         if (cachedResponse) {
           return cachedResponse;
         }
 
-        // For HTML requests, return the offline page
+        // Hvis det er en HTML-forespørgsel, returnér offline-side
         if (event.request.headers.get('accept').includes('text/html')) {
           return caches.match('/offline.html');
         }
-
-        // For other requests, we'll just have to fail
-        // You could return fallback images, etc. here
       });
     });
 }
 
-// Add this to your sw.js file
-// Stale-while-revalidate for user snippets
-
+// === STALE-WHILE-REVALIDATE STRATEGI ===
+// Returnér straks cachet indhold, men opdater i baggrunden fra netværk
 function staleWhileRevalidate(event) {
   return caches.open(SNIPPETS_CACHE).then((cache) => {
     return cache.match(event.request).then((cachedResponse) => {
-      // Create a promise for updating the cache
       const fetchPromise = fetch(event.request)
         .then((networkResponse) => {
           cache.put(event.request, networkResponse.clone());
@@ -172,24 +172,24 @@ function staleWhileRevalidate(event) {
         })
         .catch((error) => {
           console.error("Failed to update cache:", error);
-          // We still return null here to fall back to cached response
           return null;
         });
 
-      // Return the cached response immediately or wait for the network response
       return cachedResponse || fetchPromise;
     });
   });
 }
-// service-worker.js - Add background sync
-// Add this listener for background sync
+// === SYNC EVENT ===
+// Bruges til at synkronisere snippets, når forbindelsen er tilbage
 self.addEventListener('sync', event => {
   if (event.tag === 'sync-snippets') {
     console.log('Background sync triggered');
     event.waitUntil(syncSnippets());
   }
 });
-// Sync function
+
+// === SYNC-FUNKTION ===
+// Henter snippets fra IndexedDB og forsøger at sende dem til serveren
 async function syncSnippets() {
   try {
     const snippetsToSync = await getSnippetsToSync();
@@ -208,7 +208,6 @@ background`);
       } catch (error) {
         console.error(`Failed to sync snippet ${snippet.id}:`,
           error);
-        // Let the sync process continue with other snippets
       }
     }
 
@@ -216,13 +215,12 @@ background`);
 
   } catch (error) {
     console.error('Background sync failed:', error);
-    // Rethrow to allow the system to retry later
     throw error;
   }
 }
-// Helper functions - using IndexedDB from service worker
+
+// === HENT SNIPPETS FRA INDEXEDDB SOM IKKE ER SYNKRONISERET ===
 async function getSnippetsToSync() {
-  // Access IndexedDB directly from service worker
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('SnipMasterDB', 1);
 
@@ -246,8 +244,9 @@ async function getSnippetsToSync() {
   });
 }
 async function syncSnippet(snippet) {
-  // Mock server sync - in a real app, this would be an API call
-  return new Promise((resolve, reject) => {
+
+// === MOCK: SYNKRONISER ENKELT SNIPPET TIL SERVER ===
+return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (Math.random() < 0.9) {
         resolve({ success: true });
@@ -257,6 +256,8 @@ async function syncSnippet(snippet) {
     }, 500);
   });
 }
+
+// === MARKÉR SNIPPET SOM SYNKRONISERET I INDEXEDDB ===
 async function markSnippetSynced(id) {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('SnipMasterDB', 1);
